@@ -1,0 +1,11 @@
+[23-May-2017 11:27:35 UTC] PHP Fatal error:  Class 'App\Specialities' not found in /home/yourtnt/public_html/projects/merchwiz/laravel/app/Http/Controllers/SignupController.php on line 38
+[23-May-2017 11:27:40 UTC] PHP Fatal error:  Class 'App\Specialities' not found in /home/yourtnt/public_html/projects/merchwiz/laravel/app/Http/Controllers/SignupController.php on line 38
+[23-May-2017 11:28:58 UTC] PHP Fatal error:  Class 'App\Specialities' not found in /home/yourtnt/public_html/projects/merchwiz/laravel/app/Http/Controllers/SignupController.php on line 38
+[25-May-2017 16:19:39 UTC] PHP Fatal error:  Class 'App\QuestOrders' not found in /home/yourtnt/public_html/projects/merchwiz/laravel/app/Http/Controllers/Admin/OrdersController.php on line 39
+[30-May-2017 11:30:32 UTC] PHP Fatal error:  Class 'App\Http\Middleware\TokenMismatchException' not found in /home/yourtnt/public_html/projects/merchwiz/laravel/app/Http/Middleware/VerifyCsrfToken.php on line 22
+[30-May-2017 11:34:43 UTC] PHP Fatal error:  Class 'App\Http\Middleware\TokenMismatchException' not found in /home/yourtnt/public_html/projects/merchwiz/laravel/app/Http/Middleware/VerifyCsrfToken.php on line 22
+[30-May-2017 11:34:53 UTC] PHP Fatal error:  Class 'App\Http\Middleware\TokenMismatchException' not found in /home/yourtnt/public_html/projects/merchwiz/laravel/app/Http/Middleware/VerifyCsrfToken.php on line 22
+[01-Jun-2017 15:14:57 UTC] PHP Fatal error:  Class 'App\Http\Middleware\TokenMismatchException' not found in /home/yourtnt/public_html/projects/merchwiz/laravel/app/Http/Middleware/VerifyCsrfToken.php on line 22
+[05-Jun-2017 15:04:37 UTC] PHP Fatal error:  Class 'App\Http\Middleware\TokenMismatchException' not found in /home/yourtnt/public_html/projects/merchwiz/laravel/app/Http/Middleware/VerifyCsrfToken.php on line 22
+[06-Jul-2017 13:29:09 UTC] PHP Fatal error:  Class 'App\Http\Middleware\TokenMismatchException' not found in /home/yourtnt/public_html/projects/merchwiz/laravel/app/Http/Middleware/VerifyCsrfToken.php on line 22
+[01-Aug-2017 06:56:03 UTC] PHP Fatal error:  Class 'App\Http\Middleware\TokenMismatchException' not found in /home/yourtnt/public_html/projects/merchwiz/laravel/app/Http/Middleware/VerifyCsrfToken.php on line 22

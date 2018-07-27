@@ -1,0 +1,867 @@
+Fetch Categories:
+-----------------
+SELECT `wt`.`term_id`,`wtt`.`taxonomy`, `wt`.`name`, `wt`.`slug`  FROM `wp_term_taxonomy` AS `wtt`
+LEFT JOIN `wp_terms` AS `wt` ON(`wt`.`term_id` = `wtt`.`term_id`)
+WHERE `wtt`.`taxonomy` LIKE "%video%"
+
+SELECT `wp`.`id`, `wp`.`post_title`,`wp`.`post_type`,`wtt`.`taxonomy`, `wt`.`name`, `wt`.`slug`  FROM `wp_posts` AS `wp` LEFT JOIN `wp_term_relationships` AS `wtr` ON(`wtr`.`object_id`=`wp`.`id`) 
+LEFT JOIN `wp_term_taxonomy` AS `wtt` ON(`wtt`.`term_taxonomy_id` = `wtr`.`term_taxonomy_id`)
+LEFT JOIN `wp_terms` AS `wt` ON(`wt`.`term_id` = `wtt`.`term_id`)
+WHERE `wp`.`post_type` = "video"
+
+
+
+Question 5:
+-----------
+https://www.youtube.com/watch?v=HNU_vDnmZ6g
+# this samples allows you to calculate the logo size as shoes change size compared to the largest,
+# it is far easier to set the logo first and scale everything,  see question4.chain
+
+# Define the largest shoe size height
+set=largestShoe[700]
+
+
+set=gridfile[file:golpik/shoes/cooper/shoes_outside.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/shoes_outside_white.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[473],text_y[179.39130434782612],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[500],y1[250]
+
+# use this for final scale values.
+set=finalX[500],finalY[400]
+
+
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+
+#scale=size[(round(global.imageDPI / global.swatchDPI * 100))%]
+blank=height[i.height],name[text],width[i.width]
+tile=image[w]
+select=image[i]
+drape=grid[global.gridfile],texture[text]
+
+source=url[global.thisLogo],name[mask1]
+copy=name[logo1]
+select=image[logo1]
+
+#standardize the logo for the largest shoe
+scale=size[150]
+
+
+#calculate the percentage of this shoe / largest shoe x 100
+set=percent[(round(i.height / global.largestShoe * 100))]
+
+scale=size[global.percent%]
+
+
+
+select=image[i]
+copy=name[base1]
+blank=height[i.height],name[text],width[i.width],color[none],name[blanklogo]
+
+# the next line with center the logo regardless of logo size at x1 y1
+composite=x[(round(global.x1 - logo1.width / 2))],y[(round(global.y1 - logo1.height / 2))],image[logo1]
+set=gridfile1[global.gridfile],outputname[Overlay]
+call=url[file:training/pipeThruGrid]
+select=image[i]
+composite=image[Overlay]
+
+
+# Scales entire image to whatever you set finalX and finalY to
+scale=size[('global.finalX' . 'x' . 'global.finalY')]
+
+sink
+
+Question 4:
+-----------
+#this sample centers the logo at x1/y1 first then provides a mechanism to scale the entire image to any size you want.
+#
+
+set=gridfile[file:golpik/shoes/cooper/shoes_outside.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/shoes_outside_white.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[473],text_y[179.39130434782612],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[500],y1[250]
+
+# use this for final scale values.
+set=finalX[500],finalY[400]
+
+
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+
+#scale=size[(round(global.imageDPI / global.swatchDPI * 100))%]
+blank=height[i.height],name[text],width[i.width]
+tile=image[w]
+select=image[i]
+drape=grid[global.gridfile],texture[text]
+
+source=url[global.thisLogo],name[mask1]
+copy=name[logo1]
+select=image[logo1]
+
+scale=width[(round(global.w1 * 2))],height[(round(global.h1 * 2))],options[fit]
+
+
+select=image[i]
+copy=name[base1]
+blank=height[i.height],name[text],width[i.width],color[none],name[blanklogo]
+
+# the next line with center the logo regardless of logo size at x1 y1
+composite=x[(round(global.x1 - logo1.width / 2))],y[(round(global.y1 - logo1.height / 2))],image[logo1]
+set=gridfile1[global.gridfile],outputname[Overlay]
+call=url[file:training/pipeThruGrid]
+select=image[i]
+composite=image[Overlay]
+
+
+# Scales entire image to whatever you set finalX and finalY to
+scale=size[('global.finalX' . 'x' . 'global.finalY')]
+
+sink
+
+Merchwiz Logo Scaling:
+I think placing the logo first then scaling the entire shoe is an easier approach but there are other options.
+
+Example of dynamic logo scaling:
+
+Assume the largest shoe you have is 400 pixels in height.
+Assume any shoe you are going to render is named base1
+
+The first blank is base1, it represents any shoe being rendered.
+The second blank is a logo.
+This reduces the logo by the same percent of base1 when compared to the largest shoe
+
+set=largestShoe[400]
+blank=height[200],width[600],name[base1]
+blank=height[100],width[100],name[logo]
+scale=size[('base1.height'/'global.largestShoe'*100)%]
+sink
+
+Suggestion 1: How to place logos in the same location on different size shoes.
+    Because you are using different sizes, perhaps a better solution is to place the logo first then scaling the entire image to your final desired size.
+    This will make it easier to place the logo in the exact location regardless of the size you finally scale to.
+    
+Suggestion 2: How to place the logo more accurately especially when logos can be different sizes.
+    What you are currently doing with the composite command will place the to left corner of the logo at the X and Y location.
+    This can make it difficult if you have various sized logos.
+
+    A better approach is to define the X and Y desired then perform a calculation that will place the centered logo at that location.
+    See the math used in the following example,  regardless of the logo size,  we locate the center placing it at X and Y
+
+    composite=image[logo1],x[(round(global.x1 - (logo1.width / 2)))],y[(round(global.y1 - (logo1.height / 2)))]
+
+Suggestion 3:  X and Y may be giving you difficulty because you are using gravity.
+    When gravity is used, the text is placed based on the gravity location of the current image,  X and Y are then applied counting from the gravity of the image, not the top left corner.
+    Note:  You are using gravity Right and Right is not a valid option with gravity.
+
+    There are many ways of using gravity but we would need to know the desired location of the text in order to make a recommendation on the best approach.
+    Lets assume you used gravity "center".  The text is placed in the middle of the current image then X and Y are determined relative to the center of the image.
+    Gravity is always derived first and then X and Y applied relative to gravity.
+     
+    
+Fitiverse Graph api req:
+https://www.facebook.com/v2.0/dialog/share_open_graph?
+action_properties=%7B%22object%22%3A%7B%22og%3Aurl%22%3A%22https%3A%2F%2Fwww.fitiverse.com%2Fdev%2Factivities%2Fview.php%3F
+id%3D11093%22%2C%22og%3Atitle%22%3A%22November%20Project%20DC%20Run%20-%20Monday%22%2C%22og%3A
+description%22%3A%22Monday%20October%2023%2C%2020176%3A30%20AM%20to%208%3A00%20AM%20%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D%20%E2%80%8D%E2%80%8D
+Join%20November%20Project%20DC%20for%20a%20FREE%20group%20run.%20In%20the%20capital%20of%20the%20land%20of%20the%20free%2C%20home%20of%20the%20tribe%2C%20two%20dudes%2C%20one%20transplanted%20from%20Boston%20and%20the%20other%20from%20track%20town%20USA%20formed%20the%20DC%20chapter%20of%20this%20group%2C%20November%20Project.%5Cr%5Cn%5Cr%5CnNovember%20Project%20DC%20has%20grown%20into%20a%20local%20force%20of%20FREE%20fitness%2C%20smiles%2C%20and%20community.%20Take%20this%20city%20by%20storm.%20Change%20the%20way%20DC%20views%20fitness.%20%23DCTakeover%2C%20World%20Take%20Over.%5Cr%5Cn%5Cr%5CnRSVP%20for%20this%20FREE%20activity%20now%2C%20and%20invite%20your%20fitness%20buddies%20to%20join%20in%20the%20fun.%5Cr%5Cn%5Cr%5Cn*Activity%20date%20and%20time%20are%20subject%20to%20change%20based%20on%20the%20organizer.%20Please%20check%20their%20site%20for%20updates%3A%20http%3A%2F%2Fnovember-project.com%2Fwashington-dc.%22%2C%22og%3Aimage%22%3A%22https%3A%2F%2Fwww.fitiverse.com%2Fdev%2Factivities%2Ffiles%2F11093.jpg%22%2C%22og%3Asite_name%22%3A%22Fitiverse.com%22%7D%7D&action_type=og.shares&app_id=332057263629534&channel_url=https%3A%2F%2Fstaticxx.facebook.com%2Fconnect%2Fxd_arbiter%2Fr%2FMs1VZf1Vg1J.js%3Fversion%3D42%23cb%3Df8395fe325b6de%26domain%3Dwww.fitiverse.com%26origin%3Dhttps%253A%252F%252Fwww.fitiverse.com%252Ff32c9e2c8b8a298%26relation%3Dopener&display=popup&e2e=%7B%7D&locale=en_US&
+mobile_iframe=false&next=https%3A%2F%2Fstaticxx.facebook.com%2Fconnect%2Fxd_arbiter%2Fr%2FMs1VZf1Vg1J.js%3Fversion%3D42%23cb%3Df17914590fc3ed4%26
+domain%3Dwww.fitiverse.com%26origin%3Dhttps%253A%252F%252Fwww.fitiverse.com%252Ff32c9e2c8b8a298%26relation%
+3Dopener%26frame%3Df28e485aeb2a742%26result%3D%2522xxRESULTTOKENxx%2522&sdk=joey&version=v2.0
+
+
+Question 3 Fixed transparent background issue:
+----------------------------------------------
+
+
+Question 2 Fixed Lases covered issue by logo item:
+--------------------------------------------------
+# logo positon inside issue on large factory template
+# set=gridfile[file:golpik/shoes/cooper/m9/factory_outside_large.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/m9/factory_outside_large.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/large/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[52],text_x[825],text_y[514],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[300],x1[1360],y1[225]
+
+# logo positon crop issue on web factory template
+# set=gridfile[file:golpik/shoes/cooper/factory_outside_web.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/factory_outside_web.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[330],text_y[285.3913043478261],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[515],y1[150]
+
+# logo positon crop issue on web user template
+#set=gridfile[file:golpik/shoes/cooper/shoes_outside.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/shoes_outside_white.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[330],text_y[285.3913043478261],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[515],y1[150]
+
+# large factory template
+#set=gridfile[file:golpik/shoes/cooper/m9/factory_outside_large.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/m9/factory_outside_large.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/large/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[52],text_x[1183],text_y[323],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[300],x1[768],y1[179]
+
+# web factory template
+#set=gridfile[file:golpik/shoes/cooper/factory_outside_web.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/factory_outside_web.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[473],text_y[179.39130434782612],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[291],y1[119]
+
+# logo position crop and over lases issue on user view template
+set=gridfile[file:golpik/shoes/cooper/shoes_outside.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/shoes_outside_white.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[473],text_y[179.39130434782612],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[291],y1[119]
+
+# transparent background issue
+# set=gridfile[file:golpik/shoes/cooper/m9/left_outside.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/m9/left_outside.png],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/transparent_pattern.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[52],text_x[1183],text_y[323],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[300],x1[768],y1[179]
+
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+
+#scale=size[(round(global.imageDPI / global.swatchDPI * 100))%]
+blank=height[i.height],name[text],width[i.width]
+tile=image[w]
+select=image[i]
+drape=grid[global.gridfile],texture[text]
+
+source=url[global.thisLogo],name[mask1]
+copy=name[logo1]
+select=image[logo1]
+
+scale=width[(round(global.w1 * 2))],height[(round(global.h1 * 2))],options[fit]
+
+
+# The same routine can be used for the laces problem.  The only thing changes was what set command was remarked or not
+# new solution using pipeThruGrid and your existing grid files. it requires the image to be named base1 but a copy works.
+# note:  X and Y of the lion could be moved a little.
+
+select=image[i]
+copy=name[base1]
+blank=height[i.height],name[text],width[i.width],color[none],name[blanklogo]
+composite=x[(round(global.x1))],y[(round(global.y1))],image[logo1]
+set=gridfile1[global.gridfile],outputname[Overlay]
+call=url[file:training/pipeThruGrid]
+select=image[i]
+composite=image[Overlay]
+
+
+# composite=image[logo1],x[(round(global.x1 - (logo1.width / 2)))],y[(round(global.y1 - (logo1.height / 2)))]
+annotate=text[global.text],font[global.text_font],pointsize[global.text_point_size],gravity[Right],y[global.text_y],x[global.text_x],fill[global.text_color]
+sink
+
+
+Question 1 Fixed Logo Cropping outside shoe boundary
+----------------------------------------------------
+# logo positon inside issue on large factory template
+# set=gridfile[file:golpik/shoes/cooper/m9/factory_outside_large.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/m9/factory_outside_large.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/large/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[52],text_x[825],text_y[514],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[300],x1[1360],y1[225]
+
+# logo positon crop issue on web factory template
+set=gridfile[file:golpik/shoes/cooper/factory_outside_web.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/factory_outside_web.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[330],text_y[285.3913043478261],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[515],y1[150]
+
+# logo positon crop issue on web user template
+#set=gridfile[file:golpik/shoes/cooper/shoes_outside.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/shoes_outside_white.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[330],text_y[285.3913043478261],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[515],y1[150]
+
+# large factory template
+#set=gridfile[file:golpik/shoes/cooper/m9/factory_outside_large.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/m9/factory_outside_large.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/large/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[52],text_x[1183],text_y[323],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[300],x1[768],y1[179]
+
+# web factory template
+#set=gridfile[file:golpik/shoes/cooper/factory_outside_web.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/factory_outside_web.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[473],text_y[179.39130434782612],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[291],y1[119]
+
+# logo position crop and over lases issue on user view template
+# set=gridfile[file:golpik/shoes/cooper/shoes_outside.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/shoes_outside_white.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[473],text_y[179.39130434782612],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[291],y1[119]
+
+# transparent background issue
+# set=gridfile[file:golpik/shoes/cooper/m9/left_outside.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/m9/left_outside.png],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/transparent_pattern.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[52],text_x[1183],text_y[323],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[300],x1[768],y1[179]
+
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+
+#scale=size[(round(global.imageDPI / global.swatchDPI * 100))%]
+blank=height[i.height],name[text],width[i.width]
+tile=image[w]
+select=image[i]
+drape=grid[global.gridfile],texture[text]
+
+source=url[global.thisLogo],name[mask1]
+copy=name[logo1]
+select=image[logo1]
+
+scale=width[(round(global.w1 * 2))],height[(round(global.h1 * 2))],options[fit]
+
+# new solution using pipeThruGrid and your existing grid files. it requires the image to be named base1 but a copy works.
+select=image[i]
+copy=name[base1]
+blank=height[i.height],name[text],width[i.width],color[none],name[blanklogo]
+composite=x[(round(global.x1))],y[(round(global.y1))],image[logo1]
+set=gridfile1[global.gridfile],outputname[Overlay]
+call=url[file:training/pipeThruGrid]
+select=image[i]
+composite=image[Overlay]
+
+
+# composite=image[logo1],x[(round(global.x1 - (logo1.width / 2)))],y[(round(global.y1 - (logo1.height / 2)))]
+annotate=text[global.text],font[global.text_font],pointsize[global.text_point_size],gravity[Right],y[global.text_y],x[global.text_x],fill[global.text_color]
+sink
+----------------------------------------------------------
+!!!! test case for demo to support team:
+# logo positon inside issue on large factory template
+# set=gridfile[file:golpik/shoes/cooper/m9/factory_outside_large.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/m9/factory_outside_large.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/large/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[52],text_x[825],text_y[514],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[300],x1[1360],y1[225]
+
+# logo positon crop issue on web factory template
+# set=gridfile[file:golpik/shoes/cooper/factory_outside_web.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/factory_outside_web.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[330],text_y[285.3913043478261],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[515],y1[150]
+
+# logo positon crop issue on web user template
+#set=gridfile[file:golpik/shoes/cooper/shoes_outside.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/shoes_outside_white.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[330],text_y[285.3913043478261],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[515],y1[150]
+
+# large factory template
+#set=gridfile[file:golpik/shoes/cooper/m9/factory_outside_large.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/m9/factory_outside_large.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/large/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[52],text_x[1183],text_y[323],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[300],x1[768],y1[179]
+
+# web factory template
+#set=gridfile[file:golpik/shoes/cooper/factory_outside_web.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/factory_outside_web.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[473],text_y[179.39130434782612],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[291],y1[119]
+
+# logo position crop and over lases issue on user view template
+set=gridfile[file:golpik/shoes/cooper/shoes_outside.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/shoes_outside_white.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[20],text_x[473],text_y[179.39130434782612],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[75],x1[291],y1[119]
+
+# transparent background issue
+# set=gridfile[file:golpik/shoes/cooper/m9/left_outside.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/m9/left_outside.png],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/transparent_pattern.jpg],swatchDPI[72],text[Shoe for Sale],text_color[#e22a2a],text_font[arial],text_point_size[52],text_x[1183],text_y[323],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[300],x1[768],y1[179]
+
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+
+#scale=size[(round(global.imageDPI / global.swatchDPI * 100))%]
+blank=height[i.height],name[text],width[i.width]
+tile=image[w]
+select=image[i]
+drape=grid[global.gridfile],texture[text]
+
+source=url[global.thisLogo],name[mask1]
+copy=name[logo1]
+select=image[logo1]
+
+scale=width[(round(global.w1 * 2))],height[(round(global.h1 * 2))],options[fit]
+select=image[i]
+
+composite=x[(round(global.x1))],y[(round(global.y1))],image[logo1]
+
+# composite=image[logo1],x[(round(global.x1 - (logo1.width / 2)))],y[(round(global.y1 - (logo1.height / 2)))]
+annotate=text[global.text],font[global.text_font],pointsize[global.text_point_size],gravity[Right],y[global.text_y],x[global.text_x],fill[global.text_color]
+sink
+
+------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+source=url[http://www.liquidpixels.com/images/suitStore.jpg],name[suit]
+scale=size[50%]
+blank=width[4],height[4],name[tile]
+draw=primitive[line],points[0, 0, 3, 0],stroke[black]
+draw=primitive[line],points[0, 2, 3, 2],stroke[black]
+blank=width[(suit.width)],height[(suit.height)],name[lines]
+tile=image[tile]
+brightness=value[30]
+select=image[suit]
+composite=compose[difference],image[lines]
+
+
+select=image[suit]
+#source=url[http://www.liquidpixels.com/images/suitStore.jpg]
+crop=x[60],y[60],width[(suit.width - 120)],
+height[(_.height - 120)]
+sink
+
+
+#sink
+
+shoes_tongue_white:
+------------------
+set=image_i[file:golpik/shoes/cooper/shoes_tongue_white.jpg]
+set=image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg]
+set=thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png]
+set=gridfile[file:golpik/shoes/cooper/shoes_tongue.lgrd]
+
+set=h1[120],imageDPI[64],swatchDPI[72],text[Test This],text_color[#e22a2a],text_font[arial],text_point_size[24],text_x[372],text_y[272],w1[33],x1[283],y1[242]
+
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+
+# scale=size[(round(global.imageDPI / global.swatchDPI * 100))%]
+blank=height[i.height],name[text],width[i.width]
+tile=image[w]
+select=image[i]
+drape=grid[global.gridfile],texture[text]
+
+source=url[global.thisLogo],name[mask1]
+copy=name[logo1]
+select=image[logo1]
+
+scale=width[(round(global.w1 * 2))],height[(round(global.h1 * 2))],options[fit]
+select=image[i]
+composite=x[(round(global.x1))],y[(round(global.y1))],image[logo1]
+annotate=text[global.text],font[global.text_font],pointsize[global.text_point_size],gravity[Right],y[global.text_y],x[global.text_x],fill[global.text_color]
+
+sink
+
+
+white_shoes_pair.chain:
+----------------------
+set=image_i[file:merchwiz/white_pair_cooper.png]
+set=image_w_outside[file:merchwiz/heart-test.jpg]
+set=image_w_top[file:merchwiz/blue.jpg]
+set=image_w_inside[file:merchwiz/rocks.jpg]
+
+set=grid_l_outside[file:merchwiz/white_pair_outside.lgrd]
+set=grid_l_inside[file:merchwiz/white_pair_inside.lgrd]
+set=grid_l_top[file:merchwiz/white_pair_tongue.lgrd]
+set=grid_r_outside[file:merchwiz/right_white_pair_outside.lgrd]
+set=grid_r_inside[file:merchwiz/right_white_pair_inside.lgrd]
+set=grid_r_top[file:merchwiz/right_white_pair_tongue.lgrd]
+######
+source= name[base1],url[global.image_i]
+source= name[w_outside],url[global.image_w_outside]
+scale=width[base1.width],height[base1.height],options[crop]
+source= name[w_inside],url[global.image_w_inside]
+scale=width[base1.width],height[base1.height],options[crop]
+source= name[w_top],url[global.image_w_top]
+scale=width[base1.width],height[base1.height],options[crop]
+####
+blank=height[base1.height],name[text_outside],width[base1.width]
+tile=image[w_outside]
+blank=height[base1.height],name[text_inside],width[base1.width]
+tile=image[w_inside]
+blank=height[base1.height],name[text_top],width[base1.width]
+tile=image[w_top]
+###
+select=image[base1]
+drape=grid[global.grid_l_inside],texture[text_inside]
+drape=grid[global.grid_l_top],texture[text_top]
+drape=grid[global.grid_l_outside],texture[text_outside]
+drape=grid[global.grid_r_top],texture[text_top]
+drape=grid[global.grid_r_inside],texture[text_inside]
+drape=grid[global.grid_r_outside],texture[text_outside]
+sink
+
+
+TextureAll Response:
+    
+    http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/shoes_inside.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/shoes/cooper/shoes_inside_white.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,this
+    
+    Logo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink
+
+    http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/shoes_outside.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/shoes/cooper/shoes_outside_white.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink
+
+    http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/shoes_tongue.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/shoes/cooper/shoes_tongue_white.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink
+
+    http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/factory_tongue_web.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/shoes/cooper/factory_tongue_web.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink
+
+    http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/factory_outside_web.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/shoes/cooper/factory_outside_web.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink
+
+    http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/factory_inside_web.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/shoes/cooper/factory_inside_web.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink
+            
+            
+
+
+http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/shoes_inside.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/shoes/cooper/shoes_inside_white.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink
+
+http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/shoes_outside.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/shoes/cooper/shoes_outside_white.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink
+
+http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/shoes_tongue.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/shoes/cooper/shoes_tongue_white.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink
+
+http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/factory_tongue_web.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/shoes/cooper/factory_tongue_web.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink
+
+http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/factory_outside_web.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/shoes/cooper/factory_outside_web.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink
+
+http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/factory_inside_web.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/shoes/cooper/factory_inside_web.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink
+
+
+large_factory:
+http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/factory_inside_large.lgrd%5D,h1%5B120%5D,imageDPI%5B64%5D,image_i%5Bfile:golpik/shoes/cooper/factory_inside_large.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/large/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5BTEXT%20EDITED%5D,text_color%5B%23000000%5D,text_font%5Barial%5D,text_point_size%5B48%5D,text_x%5B850%5D,text_y%5B540%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/tool_items/6111502204511.png%5D,w1%5B300%5D,x1%5B330%5D,y1%5B293%5D&call=url%5Bfile:golpik/shoes_texture_1logo_1text_master.chain%5D&sink
+
+factory:
+http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/factory_inside_web.lgrd%5D,h1%5B120%5D,imageDPI%5B64%5D,image_i%5Bfile:golpik/shoes/cooper/factory_inside_web.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5BTEXT%20EDITED%5D,text_color%5B%23000000%5D,text_font%5Barial%5D,text_point_size%5B30%5D,text_x%5B340%5D,text_y%5B300%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/tool_items/6111502204511.png%5D,w1%5B150%5D,x1%5B125%5D,y1%5B195%5D&call=url%5Bfile:golpik/shoes_texture_1logo_1text_master.chain%5D&sink
+
+user:
+http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/shoes/cooper/shoes_inside.lgrd%5D,h1%5B120%5D,imageDPI%5B64%5D,image_i%5Bfile:golpik/shoes/cooper/shoes_inside_white.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg%5D,swatchDPI%5B72%5D,text%5BTEXT%20EDITED%5D,text_color%5B%23000000%5D,text_font%5Barial%5D,text_point_size%5B30%5D,text_x%5B340%5D,text_y%5B300%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/tool_items/6111502204511.png%5D,w1%5B150%5D,x1%5B125%5D,y1%5B195%5D&call=url%5Bfile:golpik/shoes_texture_1logo_1text_master.chain%5D&sink
+
+set=gridfile[file:golpik/shoes/cooper/factory_outside_large.lgrd],h1[120],imageDPI[64],image_i[file:golpik/shoes/cooper/factory_outside_large.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/large/texture_pattern_1500554173_image1.jpg],swatchDPI[72],text[TESTS TESTS],text_color[#e22a2a],text_font[arial],text_point_size[32],text_x[850],text_y[540],thisLogo[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png],w1[150],x1[1040],y1[167]
+
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+
+blank=height[i.height],name[text],width[i.width]
+tile=image[w]
+select=image[i]
+drape=grid[global.gridfile],texture[text]
+
+source=url[global.thisLogo],name[mask1]
+copy=name[logo1]
+select=image[logo1]
+
+#scale=width[(round(global.w1 * 1))],height[(round(global.h1 * 1))],options[fit]
+select=image[i]
+composite=x[(round(global.x1))],y[(round(global.y1))],image[logo1]
+annotate=text[global.text],font[global.text_font],pointsize[global.text_point_size],gravity[Right],y[global.text_y],x[global.text_x],fill[global.text_color]
+
+sink
+# 665*570  1335*758
+
+
+web size factory template:
+--------------------------
+set=imageDPI[64],text_font[caslonop],text[testing],text_x[400],text_y[20],text_point_size[70],text_color[#8B2323],swatchDPI[72],x1[900],y1[400],w1[200],h1[120],thisLogo[http://ecommercehouse.com/projects/merchwiz/uploads/tool_items/2021500480454.png],image_i[file:golpik/shoes/cooper/factory_outside_web.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500554173_image1.jpg],gridfile[file:golpik/shoes/cooper/factory_outside_web.lgrd]
+
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+
+#scale=size[(round(global.imageDPI / global.swatchDPI * 100))%]
+blank=height[i.height],name[text],width[i.width]
+tile=image[w]
+select=image[i]
+drape=grid[global.gridfile],texture[text]
+
+source=url[global.thisLogo],name[mask1]
+copy=name[logo1]
+select=image[logo1]
+
+scale=width[(round(global.w1 * 1))],height[(round(global.h1 * 1))],options[fit]
+select=image[i]
+composite=x[(round(global.x1))],y[(round(global.y1))],image[logo1]
+annotate=text[global.text],font[global.text_font],pointsize[global.text_point_size],gravity[Right],y[global.text_y],x[global.text_x],fill[global.text_color]
+#scale=size[500]
+sink
+
+
+Large size factory template:
+----------------------------
+set=imageDPI[64],text_font[caslonop],text[testing],text_x[400],text_y[20],text_point_size[70],text_color[#8B2323],swatchDPI[72],x1[900],y1[400],w1[200],h1[120],thisLogo[http://ecommercehouse.com/projects/merchwiz/uploads/tool_items/2021500480454.png],image_i[file:golpik/shoes/cooper/factory_outside_large.jpg],image_w[http://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/large/texture_pattern_1500554173_image1.jpg],gridfile[file:golpik/shoes/cooper/factory_outside_large.lgrd]
+
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+
+#scale=size[(round(global.imageDPI / global.swatchDPI * 100))%]
+blank=height[i.height],name[text],width[i.width]
+tile=image[w]
+select=image[i]
+drape=grid[global.gridfile],texture[text]
+
+source=url[global.thisLogo],name[mask1]
+copy=name[logo1]
+select=image[logo1]
+
+scale=width[(round(global.w1 * 1))],height[(round(global.h1 * 1))],options[fit]
+select=image[i]
+composite=x[(round(global.x1))],y[(round(global.y1))],image[logo1]
+annotate=text[global.text],font[global.text_font],pointsize[global.text_point_size],gravity[Right],y[global.text_y],x[global.text_x],fill[global.text_color]
+#scale=size[500]
+sink
+
+
+add_text_&_item.chain:
+---------------------
+set=text_font[VeraSans-Roman],text[Test this Text!],text_x[284],text_y[281],text_point_size[24],text_color[#000000],item_x[494],item_y[146],item_w[150],item_h[150],thisItem[http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/2391503658814.png],baseImg[http://golpik.net/projects/laravel/merchwiz/uploads/liquid_pixel/textured-61519816360.jpg],gridfile[file:merchwiz/black_cooper_Loutside.lgrd]
+
+source=name[item],url[global.thisItem]
+scale=width[global.item_w],height[global.item_h]
+source=url[global.baseImg]
+composite=image[item],x[global.item_x],y[global.item_y]
+annotate=font[global.text_font],pointsize[global.text_point_size],text[global.text],x[global.text_x],y[global.text_y],fill[global.text_color]
+sink
+
+Same above example using drapping method:
+-----------------------------------------
+set=imageDPI[64],imagePer[50],text_font[caslonop],text[testing],text_x[700],text_y[281],text_point_size[70],text_color[#8B2323],swatchDPI[72],x1[900],y1[400],w1[200],h1[120],thisLogo[http://ecommercehouse.com/projects/merchwiz/uploads/tool_items/2021500480454.png],image_i[file:merchwiz/Black-left-outside.jpg],image_w[file:merchwiz/rocks.jpg],gridfile[file:merchwiz/black_cooper_Loutside.lgrd]
+
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+
+scale=size[(round(global.imageDPI / global.swatchDPI * global.imagePer))%]
+blank=height[i.height],name[text],width[i.width]
+tile=image[w]
+select=image[i]
+drape=grid[global.gridfile],texture[text]
+
+source=url[global.thisLogo],name[mask1]
+copy=name[logo1]
+select=image[logo1]
+
+scale=width[(round(global.w1 * 1))],height[(round(global.h1 * 1))],options[fit]
+select=image[i]
+composite=x[(round(global.x1))],y[(round(global.y1))],image[logo1]
+annotate=text[global.text],font[global.text_font],pointsize[global.text_point_size],gravity[Right],y[global.text_y],x[global.text_x],fill[global.text_color]
+#scale=size[500]
+sink
+
+
+
+http://merchwiz.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/white_left_shoes.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B100%5D,image_i%5Bfile:golpik/white_left_shoes_white.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/product-1519825239.png%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink
+
+console.log e.target:
+{"type":"image","originX":"left","originY":"top","left":458,"top":149,"width":150,"height":150,
+"fill":"rgb(0,0,0)","stroke":null,"strokeWidth":1,"strokeDashArray":null,"strokeLineCap":"butt",
+"strokeLineJoin":"miter","strokeMiterLimit":10,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,
+"flipY":false,"opacity":1,"shadow":null,"visible":true,"clipTo":null,"backgroundColor":"",
+"src":"http://golpik.net/projects/laravel/merchwiz/uploads/tool_items/9161502204473.png",
+"filters":[],"crossOrigin":""}
+
+print_r request:
+---------------
+
+Array(    
+
+
+[source_image] => 7271504867630.jpg    
+[texture_path] => texture_pattern_1500569875_image1.jpg    
+[product_caption] => white_left_shoes_factory    
+[image_view] => inside factory    
+[sole_color] => white    
+[texture_inside] => texture_pattern_1500569875_image1.jpg    
+[texture_outside] => texture_pattern_1500569875_image1.jpg   
+[texture_top] => texture_pattern_1500569875_image1.jpg    
+[target_type] => image    
+[item_x] => 453    
+[item_y] => 143    
+[item_w] => 150    
+[item_h] => 150    
+[text_font] =>     
+[text] =>     [text_x] =>     [text_y] =>     [text_point_size] =>     [text_color] => )
+
+
+
+<pre>image</pre>
+{"1":
+{"orb_req":"http:\/\/merchwiz.liquifire.com\/merchwiz?set=gridfile%5Bfile:golpik\/white_left_shoes.lgrd%5D,
+h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B100%5D,image_i%5Bfile:golpik\/white_left_shoes_white.jpg%5D,
+image_w%5Bhttp:\/\/golpik.net\/projects\/laravel\/merchwiz\/uploads\/texture_patterns\/product-1519827384.png%5D,
+swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,
+text_x%5B0%5D,
+text_y%5B0%5D,thisLogo%5Bhttp:\/\/golpik.net\/projects\/laravel\/merchwiz\/front\/images\/noimage.jpg%5D,
+w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&
+call=url%5Bfile:golpik\/white_shoes_v3.chain%5D&
+scale=size%5B665%5D&sink","liquid_pixel_image":"textured-1519827395.jpg",
+"actual":"7271504867630.jpg","caption":"white_left_shoes",
+"texture_path":"texture_pattern_1500569875_image1.jpg","editable":false,"image_view":"pair"},
+"0":{"liquid_pixel_image":"textured-1519827389.jpg","actual":"7271504867630.jpg",
+"caption":"white_left_shoes","texture_path":"texture_pattern_1500569875_image1.jpg",
+"editable":false,"image_view":"inside"}}
+
+
+file:/lpi_logo_placement.chain:
+###  Your chain will need to accept the variables as defined on the next line.  They come from the calling URL
+# set=imageDPI[64],swatchDPI[72],x1[900],y1[200],w1[76],h1[72],thisLogo[file:training/Chicago_Blackhawks.png],image_i[file:merchwiz/Black-left-outside.jpg],image_w[file:merchwiz/rocks.jpg],gridfile[file:merchwiz/black_cooper_Loutside.lgrd]
+
+### Your code
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+scale=size[(round(global.imageDPI / global.swatchDPI * 100))%]
+blank=height[i.height],name[text],width[i.width]
+tile=image[w]
+select=image[i]
+drape=grid[global.gridfile],texture[text]
+
+
+### A sample routine to composite an image onto you exiting image
+source=url[global.thisLogo],name[mask1]
+trim
+### drop out white background, if needed
+copy=name[logo1]
+gamma=gamma[.15]
+threshold=level[245]
+select=image[logo1]
+composite=compose[replacematte],image[mask1]
+layer=layer[alpha],name[modAlpha]
+blur=sigma[1],width[1.5]
+threshold=level[20]
+select=image[logo1]
+composite=compose[replacematte],image[modAlpha]
+### drop out white background, ended
+
+scale=width[(round(global.w1 * 1.66))],height[(round(global.h1 * 1.66))],options[fit]
+select=image[i]
+composite=x[(round(global.x1))],y[(round(global.y1))],image[logo1]
+
+
+# scale=size[900]
+# sink
+
+file:/golpik/white_shoes_v3.chain:
+
+#set=imageDPI[64],imagePer[50],text_font[caslonop],text[testing],text_x[400],text_y[20],text_point_size[70],text_color[#8B2323],swatchDPI[72],x1[900],y1[400],w1[200],h1[120],thisLogo[http://ecommercehouse.com/projects/merchwiz/uploads/tool_items/2021500480454.png],image_i[file:merchwiz/Black-left-outside.jpg],image_w[file:merchwiz/rocks.jpg],gridfile[file:merchwiz/black_cooper_Loutside.lgrd]
+
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+
+scale=size[(round(global.imageDPI / global.swatchDPI * global.imagePer))%]
+blank=height[i.height],name[text],width[i.width]
+tile=image[w]
+select=image[i]
+drape=grid[global.gridfile],texture[text]
+
+source=url[global.thisLogo],name[mask1]
+copy=name[logo1]
+select=image[logo1]
+
+scale=width[(round(global.w1 * 1))],height[(round(global.h1 * 1))],options[fit]
+select=image[i]
+composite=x[(round(global.x1))],y[(round(global.y1))],image[logo1]
+annotate=text[global.text],font[global.text_font],pointsize[global.text_point_size],gravity[Right],y[global.text_y],x[global.text_x],fill[global.text_color]
+#scale=size[500]
+#sink
+
+G_logoPath        | G_logo_x | G_logo_y | G_logo_width  | G_logo_height
+2391503658814.png | 11       | 211      | 150           | 150
+2391503658814.png | 313      | 226      | 150           | 150
+
+G_text          | G_text_font   | G_text_x  | G_text_y  | G_text_color  | G_text_size
+Test This Text  | arial         | 373       | 206       | #e22a2a       | 20
+
+http://merchwiz.ma.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/white_left_shoes.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/white_left_shoes_white.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink&key=key%5B1500541044412%5D
+http://merchwiz.ma.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/white_right_shoes.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/white_right_shoes_white.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink&key=key%5B1500541044412%5D
+http://merchwiz.ma.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/white_top_shoes.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/white_top_shoes_white.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink&key=key%5B1500541044412%5D
+http://merchwiz.ma.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/white_top_shoes_factory.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/white_top_shoes_factory.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink&key=key%5B1500541044412%5D
+http://merchwiz.ma.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/white_right_shoes_factory.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/white_right_shoes_factory.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink&key=key%5B1500541044412%5D
+http://merchwiz.ma.liquifire.com/merchwiz?set=gridfile%5Bfile:golpik/white_left_shoes_factory.lgrd%5D,h1%5B1%5D,imageDPI%5B64%5D,imagePer%5B105%5D,image_i%5Bfile:golpik/white_left_shoes_factory.jpg%5D,image_w%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg%5D,swatchDPI%5B72%5D,text%5B0%5D,text_color%5B%0%5D,text_font%5BVeraSansMono-Oblique%5D,text_point_size%5B1%5D,text_x%5B0%5D,text_y%5B0%5D,thisLogo%5Bhttp://golpik.net/projects/laravel/merchwiz/front/images/noimage.jpg%5D,w1%5B1%5D,x1%5B-10%5D,y1%5B-10%5D&call=url%5Bfile:golpik/white_shoes_v3.chain%5D&scale=size%5B665%5D&sink&key=key%5B1500541044412%5D
+
+
+http://merchwiz.ma.liquifire.com/merchwiz?set=grid_l_inside%5Bfile:golpik/white_pair_inside.lgrd%5D,grid_l_outside%5Bfile:golpik/white_pair_outside.lgrd%5D,grid_l_top%5Bfile:golpik/white_pair_tongue.lgrd%5D,grid_r_inside%5Bfile:golpik/right_white_pair_inside.lgrd%5D,grid_r_outside%5Bfile:golpik/right_white_pair_outside.lgrd%5D,grid_r_top%5Bfile:golpik/right_white_pair_tongue.lgrd%5D,image_i%5Bfile:golpik/white_pair_shoes_white.jpg%5D,image_w_inside%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg%5D,image_w_outside%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg%5D,image_w_top%5Bhttp://golpik.net/projects/laravel/merchwiz/uploads/texture_patterns/texture_pattern_1500569875_image1.jpg%5D&call=url%5Bfile:golpik/white_shoes_pair.chain%5D&scale=size%5B665%5D&sink&key=key%5B1501678377455%25%5D&key=key%5B1505896282936%5D
+
+# DESC: Draw some text to appear filled by an image
+blank=width[400],height[400],name[c],color[skyblue]
+text=text[Hello],pad[10],bgcolor[white],fill[black],font[VeraSans-Bold],pointsize[100],name[t]
+source=url[http://www.liquidpixels.com/images/truff.jpg],name[cat]
+scale=width[t.width],height[t.height],options[stretch]
+attribute=key[matte],value[true]
+composite=compose[replacematte],image[t]
+select=image[c]
+composite=compose[over],image[cat],x[(round(c.width/2-t.width/2))],y[(round(c.height/2-t.height/2))]
+sink
+
+# animation
+blank=width[100],height[100],color[blue],name[a]
+blank=width[100],height[100],color[red],name[b]
+attribute=key[delay],value[100]
+addframe=image[a],delay[100],x[0],y[0]
+select=image[b],frame[1]
+annotate=text[Hi],gravity[Center],font[VeraSans-Roman],pointsize[20]
+select=image[b],frame[2]
+annotate=text[There],gravity[Center],font[VeraSans-Roman],pointsize[20]
+select=image[b]
+sink=format[gif],loop[forever]
+
+# bubble 1
+source=url[http://www.liquidpixels.com/images/orbExamples/Bubble.svg],name[mask]
+svg=type[style],id[Left],value[fill:black;]
+svg=type[style],id[Bubble],value[fill:black;]
+source=url[http://www.liquidpixels.com/images/orbExamples/Bubble.svg],name[b]
+svg=type[style],id[Left],value[fill:white;]
+_rasterize
+attribute=key[matte],value[true]
+composite=compose[ReplaceMatte],image[mask]
+annotate=text[Meow!],gravity[Center],font[VeraSans-Roman],pointsize[24],y[-5]
+source=url[http://www.liquidpixels.com/images/truff.jpg]
+scale=size[400]
+composite=image[b],x[210],y[40]
+sink
+
+
+# bubble 2
+source=url[http://www.liquidpixels.com/images/orbExamples/Bubble.svg],name[mask]
+svg=type[style],id[Left],value[fill:gray40;stroke:gray20;stroke-width:2;]
+svg=type[style],id[Bubble],value[fill:gray40;stroke:gray20;stroke-width:2;]
+source=url[http://www.liquidpixels.com/images/orbExamples/Bubble.svg],name[b]
+svg=type[style],id[Left],value[fill:white;stroke:navy;stroke-width:2;]
+svg=type[style],id[Bubble],value[fill:white;stroke:navy;stroke-width:2;]
+_rasterize
+attribute=key[matte],value[true]
+composite=compose[ReplaceMatte],image[mask]
+annotate=text[Like, Meow?],alignto[Center],font[VeraSans-Roman],pointsize[14],x[(round(b.width/2))],y[(round(b.height/2)-4)]
+source=url[http://www.liquidpixels.com/images/truff.jpg]
+scale=size[400]
+composite=image[b],x[220],y[30]
+sink
+
+# DESC: Create a 'button' with shadow from text
+set=key[text],value[My Button]
+set=key[textsize],value[14]
+fontmetrics=font[VeraSans-Oblique],pointsize[global.textsize],text[global.text]
+blank=width[(round(global.metrics.x+25))],height[(round(global.metrics.y+25))]
+draw=primitive[rectangle],fill[black],points[5 5 (global.metrics.x+16) (global.metrics.y+17)]
+blur=width[7],sigma[6]
+draw=primitive[rectangle],fill[lightsteelblue],stroke[black],points[5 5 (global.metrics.x+15) (global.metrics.y+15)]
+crop=x[5],y[5],width[(round(global.metrics.x+25))],height[(round(global.metrics.y+25))]
+annotate=font[VeraSans-Oblique],pointsize[global.textsize],text[global.text],alignto[Center],x[(round((global.metrics.x+10)/2))],y[(round((global.metrics.y+10)/2))]
+sink=format[gif]
+
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>TODO write content</div>
+    </body>
+</html>
+main.chain:
+set=image_i[file:merchwiz/Black-left-outside.jpg],image_w[file:merchwiz/rocks.jpg],imageDPI[64],swatchDPI[72]
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+scale=size[(round(global.imageDPI / global.swatchDPI * 100))%]
+blank=height[i.height],name[text],width[i.width]
+tile=image[w]
+select=image[i]
+drape=grid[file:merchwiz/black_cooper_Loutside.lgrd],texture[text]
+scale=size[900]
+sink
+
+***     ***     ***
+lpi_logo_placement.chain:
+###  Your chain will need to accept the variables as defined on the next line.  They come from the calling URL
+set=imageDPI[64],swatchDPI[72],x1[900],y1[200],w1[76],h1[72],thisLogo[file:training/Chicago_Blackhawks.png],image_i[file:merchwiz/Black-left-outside.jpg],image_w[file:merchwiz/rocks.jpg],gridfile[file:merchwiz/black_cooper_Loutside.lgrd]
+
+### Your code
+source= name[i],url[global.image_i]
+source= name[w],url[global.image_w]
+scale = size[(round(global.imageDPI / global.swatchDPI * 100))%]
+blank = height[i.height],name[text],width[i.width]
+tile = image[w]
+select = image[iz]
+drape = grid[global.gridfile],texture[text]
+
+### A sample routine to composite an image onto you exiting image
+source=url[global.thisLogo],name[mask1]
+trim
+### drop out white background, if needed
+copy=name[logo1]
+gamma=gamma[.15]
+threshold=level[245]
+select=image[logo1]
+composite=compose[replacematte],image[mask1]
+layer=layer[alpha],name[modAlpha]
+blur=sigma[1],width[1.5]
+threshold=level[20]
+select=image[logo1]
+composite=compose[replacematte],image[modAlpha]
+### drop out white background, ended
+
+scale=width[(round(global.w1 * 1.66))],height[(round(global.h1 * 1.66))],options[fit]
+select=image[i]
+composite=x[(round(global.x1))],y[(round(global.y1))],image[logo1]
+
+scale=size[900]
+sink
+
+***     ***     ***
+pair_sample.chain:
+set=imageDPI[64],imagePer[50],swatchDPI[72]
+set=image_i[file:merchwiz/white_pair_cooper.png]
+set=image_w_outside[file:merchwiz/heart-test.jpg]
+set=image_w_top[file:merchwiz/blue.jpg]
+set=image_w_inside[file:merchwiz/rocks.jpg]
+######
+source= name[base1],url[global.image_i]
+source= name[w_outside],url[global.image_w_outside]
+scale=width[base1.width],height[base1.height],options[crop]
+source= name[w_inside],url[global.image_w_inside]
+scale=width[base1.width],height[base1.height],options[crop]
+source= name[w_top],url[global.image_w_top]
+scale=width[base1.width],height[base1.height],options[crop]
+####
+blank=height[base1.height],name[text_outside],width[base1.width]
+tile=image[w_outside]
+blank=height[base1.height],name[text_inside],width[base1.width]
+tile=image[w_inside]
+blank=height[base1.height],name[text_top],width[base1.width]
+tile=image[w_top]
+
+select=image[base1]
+drape=grid[file:merchwiz/white_pair_inside.lgrd],texture[text_inside]
+drape=grid[file:merchwiz/white_pair_tongue.lgrd],texture[text_top]
+drape=grid[file:merchwiz/white_pair_outside.lgrd],texture[text_outside]
+drape=grid[file:merchwiz/right_white_pair_tongue.lgrd],texture[text_top]
+drape=grid[file:merchwiz/right_white_pair_inside.lgrd],texture[text_inside]
+drape=grid[file:merchwiz/right_white_pair_outside.lgrd],texture[text_outside]
+sink
+
+***     ***     ***

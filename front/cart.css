@@ -1,0 +1,127 @@
+.check-left-sect {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+
+
+.check-left-sect table.table thead td {
+    background-color: #42a5f6;
+    color: #fff;
+    border: 1px solid #42a5f6;
+}
+
+.check-left-sect table.table tbody td {
+    border: 1px solid #ddd;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.order-cont {
+    margin-top: 30px;
+    border: 1px solid #ddd;
+    padding: 15px;
+}
+
+span.order-total-head {
+    font-weight: 500;
+    font-size: 18px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+input.form-control.qty-txt {
+    width: auto;
+    float: none;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.order-cont .input-group .input-group-addon {
+    background-color: transparent;
+}
+
+.order-cont .input-group .input-group-addon .btn {
+    background-color: #42a5f6;
+    height: 38px;
+    color: #fff;
+    width: 100%;
+    border-radius: 0;
+}
+
+#cart_update .fa-trash {
+    color: #fff;
+    background-color: #c00;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-shadow: 3px 3px 0px rgba(0,0,0,.3);
+    border-radius: 4px;
+}
+
+.checkout-img {
+    text-align: left;
+}
+
+.check-left-sect table.table tbody td br {
+    display: none;
+}
+
+.checkout-btm-lnks a.btn {
+    line-height: 30px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.checkout-btm-lnks a.btn .fa {
+    display: inline-block;
+    position: relative;
+    left: -40px;
+}
+
+.checkout-btm-lnks a.btn:hover .fa {
+    left: 0px;
+}
+
+.checkout-btm-lnks a.btn {
+    overflow: hidden;
+    border-radius: 0;
+	padding-right:30px;
+}
+
+.checkout-btm-lnks a.btn:hover span {
+    display: inline-block;
+}
+
+.checkout-btm-lnks a.btn:hover span {
+    display: inline-block;
+    position: relative;
+    /* left: 10px; */
+}
+
+.checkout-area button.btn {
+    background-color: #42a5f6;
+    line-height: 40px;
+    color: #fff;
+    border: 0;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    font-size: 16px;
+}
+
+body label {
+    font-weight: 500;
+}
+
+.checkout-area {
+    margin-top: 28px;
+    position: relative;
+}
+.sidebar >br {
+    display: none;
+}
+
+body [type="radio"]:checked + label {
+    color: #42a5f6;
+    font-weight: 500;
+}

@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en" class="livewindowsize0 ">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!--iPhone from zooming form issue (maximum-scale=1, user-scalable=0)-->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+    <title>Shirt Customization</title>
+
+	<link rel="icon" type="image/png" href="images/favicon.png">
+	
+    <!-- Bootstrap --><link href="css/bootstrap.min.css" rel="stylesheet">
+	
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="css/colorized.css">
+	<link rel="stylesheet" href="css/animate.css">
+	<link rel="stylesheet" href="css/slidenav.css">
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+		<!--link rel="stylesheet" href="css/foundation-icons.css"-->
+		<!--link rel="stylesheet" type="text/css" href="css/flaticon.css"--> 
+	<link rel="stylesheet" href="css/swiper.min.css">
+
+	<!-- jQuery -->
+	<script src="js/jquery-2.2.4.min.js"></script>
+	  <script src="js/fabric.js-1.6.3/dist/fabric.min.js"></script>
+	  <script src="js/fabric.js-1.6.3/dist/fabricjs_viewport.js"></script>
+
+	  <!--<script src="js/customiseControls.js"></script>-->
+	  <!--<script src="js/customiseCornerIcons.js"></script>-->
+	
+	<!--browser selector-->
+	<script src="js/css_browser_selector.js" type="text/javascript"></script>
+	
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+
+    <![endif]-->
+	
+	
+  </head>
+  <body class="bg-navy ">
+
+
+<main id="page-content">
+
+
+	<section class="hdr-area white">
+		<div class="container posrel">
+			<div class="top-area col-sm-12 form-group">
+				<div class="col-sm-5"><h3>CUSTOMIZATION TOOL</h3></div>
+				<div class="col-sm-5 pt10">
+					<button class="btn green_back" type="button" name="stroke" onclick="showShirtCanvas()">SHIRT</button>
+					<button class="btn green_back" type="button" name="stroke" onclick="showIphoneCanvas()">IPHONE</button>
+					<button class="btn green_back" type="button" name="stroke" onclick="showBuisnessCardCanvas()">BUSINESS CARD</button>
+					<button class="btn green_back" type="button" name="stroke" onclick="showMugCanvas()">MUG</button>
+				</div>
+				<div class="col-sm-2"><button class="close btn btn-primary" type="button">X</button></div>
+			</div>
+		</div>
+	</section>
+	
+	
+	<section class="main-area">
+		<div class="container ">
+			
+			
+			<div class="main__tool tool-area col-xs-5 p0 bg-silver">
+
+			<ul class="nav nav-tabs">
+			  <li ><a href="#tab1" data-toggle="tab" class="">Elements</a></li>
+			  <li class="active"><a href="#tab2" data-toggle="tab" class="">Text Editor</a></li>
+			  <li><a href="#tab3" data-toggle="tab" class="">Save & Load</a></li>
+			</ul>
+
+			<div class="tab-content">
+			  
+			  <div class="tab-pane overload accordion-arr" id="tab1">
+			  
+			  
+				<div class="panel-group" id="accordion">
+				 
+					<div class="panel panel-default">
+						<!--<div class="panel-heading green_back">-->
+						  <!--<h4 class="panel-title">-->
+							<!--<a data-toggle="collapse" data-parent="#accordion" href="#collapse1">-->
+							  <!--<i class="fa fa-github-alt"></i> Animal Prints-->
+							<!--</a>-->
+						  <!--</h4>-->
+						<!--</div>-->
+						<div id="collapse1" class="panel-collapse collapse ">
+						  <div class="panel-body">
+							
+							<!--<div class="form-group col-sm-6 p0">-->
+								<!--<select class="form-control">-->
+									<!--<option value="abc">Art</option>-->
+									<!--<option value="abc">Raster</option>-->
+								<!--</select>-->
+							<!--</div>-->
+							
+							
+							<div class="element-area clrboth list-col-4">
+								<ul>
+									<li><a href="#" onclick="return addAnimalImage('cat');"><img src="images/animal/cat.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addAnimalImage('tiger');"><img src="images/animal/tiger.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addAnimalImage('horse');"><img src="images/animal/horse.png" alt="" /></a></li>
+									<!--<li><a href="#"><img src="images/p2.jpg" alt="" /></a></li>-->
+
+								</ul>
+							</div>
+							
+							
+						  </div>
+						</div>
+					</div>
+				  
+				  
+					<div class="panel active panel-default">
+						<div class="panel-heading green_back">
+						  <h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+							  <i class="fa fa-wpforms"></i> Colored Icons
+							</a>
+						  </h4>
+						</div>
+						<div id="collapse2" class="panel-collapse collapse in">
+						  <div class="panel-body">
+							
+							<!--<div class="form-group col-sm-6 p0">-->
+								<!--<select class="form-control" disabled>-->
+									<!--<option value="abc">Company</option>-->
+									<!--<option value="abc">Raster</option>-->
+								<!--</select>-->
+							<!--</div>-->
+							
+							
+							<div class="element-area clrboth list-col-4">
+								<ul>
+									<!--<li><a href="#" onclick="return fbs_click(this);"><img src="images/logo/golpik.png" alt="" /></a></li>-->
+									<!--<li><a href="#" onclick="return addLogoImage('google');"><img src="images/logo/google.png" alt="" /></a></li>-->
+									<!--<li><a href="#" onclick="return addLogoImage('microsoft');"><img src="images/logo/microsoft.png" alt="" /></a></li>-->
+									<!--<li><a href="#" onclick="return addLogoImage('paypal');"><img src="images/logo/paypal.png" alt="" /></a></li>-->
+									<!--<li><a href="#" onclick="return addLogoImage('logo_2');"><img src="images/logo/logo_2.png" alt="" /></a></li>-->
+									<!--<li><a href="#" onclick="return addLogoImage('logo_1');"><img src="images/logo/logo_1.png" alt="" /></a></li>-->
+									<!--<li><a href="#" onclick="return addLogoImage('logo_3');"><img src="images/logo/logo_3.png" alt="" /></a></li>-->
+
+									<li><a href="#" onclick="return addLogoSvg('0138');"><img src="images/clipart/0138.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addLogoSvg('0150');"><img src="images/clipart/0150.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addLogoSvg('0192');"><img src="images/clipart/0192.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addLogoSvg('0196');"><img src="images/clipart/0196.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addLogoSvg('0046');"><img src="images/clipart/0046.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addLogoSvg('0020');"><img src="images/clipart/0020.png" alt="" /></a></li>
+
+								</ul>
+							</div>
+							
+						  </div>
+						</div>
+					</div>
+				  
+				  
+				  
+					<div class="panel panel-default">
+						<div class="panel-heading green_back">
+						  <h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+							  <i class="fa fa-star"></i> Shapes
+							</a>
+						  </h4>
+						</div>
+						<div id="collapse3" class="panel-collapse collapse">
+						  <div class="panel-body">
+							
+							
+							<div class="element-area clrboth list-col-4">
+
+								<!--<input type="button" value="addrect" onclick="addrect()">-->
+								<input type="button" value="undo" onclick="undo()">
+								<input type="button" value="redo" onclick="redo()">
+								<!--<input type="button" value="clear" onclick="clearcan()">-->
+								<input class="form-control" id="shape_color_code" type="color" name="shape_color" value="#000000" onchange="changeFillColor('shape');">
+
+								<ul>
+									<li><a href="#" onclick="return addShape('rectangle');"><img src="images/clipart/0008.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addShape('triangle');"><img src="images/clipart/0008.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addShape('circle');"><img src="images/clipart/0008.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addShape('star');"><img src="images/clipart/0008.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addShape('polygon');"><img src="images/clipart/0008.png" alt="" /></a></li>
+
+								</ul>
+							</div>
+							
+						  </div>
+						</div>
+					</div>
+				  
+				  
+				  
+					<div class="panel panel-default">
+						<div class="panel-heading green_back">
+						  <h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion" href="#collapse4">
+							  <i class="fa fa-clipboard"></i> Clipart
+							</a>
+						  </h4>
+						</div>
+						<div id="collapse4" class="panel-collapse collapse">
+						  <div class="panel-body">
+							
+							<div class="form-group col-sm-6 p0">
+								<input class="form-control" id="svg_color_code" type="color" name="svg_color" value="#000000" onchange="changeFillColor('svg');">
+								<select class="form-control">
+									<option value="abc">Cars</option>
+									<option value="abc" disabled>Bikes</option>
+								</select>
+							</div>
+							
+							
+							<div class="element-area clrboth list-col-4">
+								<ul>
+
+									<li><a href="#" onclick="return addClipArtImage('0008');"><img src="images/clipart/0008.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addClipArtImage('0035');"><img src="images/clipart/0035.png" alt="" /></a></li>
+									<!--<li><a href="#" onclick="return addClipArtImage('0046');"><img src="images/clipart/0046.png" alt="" /></a></li>-->
+									<li><a href="#" onclick="return addClipArtImage('0076');"><img src="images/clipart/0076.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addClipArtImage('0134');"><img src="images/clipart/0134.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addClipArtImage('0169');"><img src="images/clipart/0169.png" alt="" /></a></li>
+									<li><a href="#" onclick="return addClipArtImage('0190');"><img src="images/clipart/0190.png" alt="" /></a></li>
+
+								</ul>
+							</div>
+
+						  </div>
+						</div>
+					</div>
+
+
+
+					<div class="panel panel-default">
+						<div class="panel-heading green_back">
+						  <h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion" href="#collapse5">
+							  <i class="fa fa-cloud-upload"></i> Upload Image
+							</a>
+						  </h4>
+						</div>
+						<div id="collapse5" class="panel-collapse collapse">
+						  <div class="panel-body">
+							
+							
+							<div class="file-drop-area fnc-uplaod">
+							  <span class="fake-btn green_back">Upload Image</span>
+							  <!--<span class="file-msg js-set-number">or drag and drop files here</span>-->
+							  <input class="file-input" type="file" id="imgLoader">
+							</div>
+
+							<p>You can choose the file format JPG,PNG or SVG file no larger than 1MB</p>
+							
+							<!--<div class="form-group col-sm-12 p0">-->
+								<!--<button class="btn green_back">Upload</button>-->
+							<!--</div>-->
+							
+						  </div>
+						</div>
+					</div>
+				  
+				  
+				</div>
+
+
+			  </div>
+			  <div class="tab-pane active" id="tab2">
+			  
+			  
+			  
+
+				<div class="text-area bg-silver ">
+					<!--<div class="hed green_back clrhm white p10">-->
+						<!--<h4>Text Here</h4>-->
+					<!--</div>-->
+					
+					<div class="form-group">
+						<textarea id="my_text" name="add_text2" class="form-control bg-gray" placeholder="Your Text Here"></textarea>
+					</div>	
+				</div>
+				<div class="font-area fc30x30 bg-silver col-xs-12 pt10 pb10  control-group inline-control">
+
+
+					<select class="form-control" id="font_selector" onchange="clickListener(this)">
+						<option value="Times New Roman">Times New Roman</option>
+						<option value="Currier New">Currier New</option>
+						<option value="Tahoma">Tahoma</option>
+						<option value="arial">Arial</option>
+						<option value="helvetica" selected="">Helvetica</option>
+						<option value="myriad pro">Myriad Pro</option>
+						<option value="delicious">Delicious</option>
+						<option value="verdana">Verdana</option>
+						<option value="georgia">Georgia</option>
+						<option value="courier">Courier</option>
+						<option value="comic sans ms">Comic Sans MS</option>
+						<option value="plaster">Plaster</option>
+						<option value="impact">Impact</option>
+						<option value="monaco">Monaco</option>
+						<option value="optima">Optima</option>
+						<option value="hoefler text">Hoefler Text</option>
+						<option value="plaster">Plaster</option>
+						<option value="engagement">Engagement</option>
+						<span class="caretOne"></span>
+					</select>
+						<input class="form-control" id="text_color_code" type="color" name="text_color" value="#ffffff" onchange="clickListener(this)">
+						<input class="form-control" id="size_selector" type="number" name="text_size" value="20" onchange="clickListener(this)">
+						<button id="btn_addtext" class="btn green_back" onclick="AddText()">Add Text</button>
+					
+				</div>
+				<div class="stroke-area fc30x30 white">
+					<div class="stroke-box col-xs-4 control-group inline-control">
+						<h5>Stroke</h5>
+						<button id="btn_stroke_toggle" class="form-control" type="button" name="stroke_toggle" onclick="clickListener(this)"><i class="fa fa-paint-brush"></i></button>
+						<input id="stroke_color_code" class="form-control" type="color" name="background_color" value="#35a7e1" onchange="setStrokeColor()">
+						<input id="stroke_size_selector" class="form-control" type="number" name="align" value="1" onchange="setStrokeSize()">
+					</div>
+					
+					<div class="background-box col-xs-4 control-group inline-control p0">
+						<h5>Background color</h5>
+						<div class="form-group hidden-checkbox pul-lft">
+						<input  type="checkbox" id="text_bg_toggle" class="is-changed is-valid">
+						<div class="checkylbl ">
+						  <label for="toggle" class="green_back"></label>
+						</div>
+						</div>
+						<input id="text_bg_color_code"  class="form-control" type="color" name="background_color" value="#35a7e1" onchange="clickListener(this)">
+					</div>
+					
+					<div class="align-box col-xs-4 control-group inline-control">
+						<h5>Align</h5>
+						<button id="btn_align_left" class="form-control" type="button" name="stroke"><i class="fa fa-align-left"></i></button>
+						<button id="btn_align_center" class="form-control" type="button" name="stroke"><i class="fa fa-align-center"></i></button>
+						<button id="btn_align_right" class="form-control" type="button" name="stroke"><i class="fa fa-align-right"></i></button>
+					</div>
+					
+				</div>
+				
+				<div class="style-area fc30x30 white bg-gray col-xs-12 pb10 pl0">
+				
+					<div class="col-xs-8 inline-control">
+						<h5>Style</h5>
+						<button title="Bold" id="btn_bold" class="form-control" type="button" name="stroke" onclick="clickListener(this)">
+						<i class="fa fa-bold"></i></button>
+						<button title="Italic" id="btn_italic" class="form-control" type="button" name="stroke" onclick="clickListener(this)">
+						<i class="fa fa-italic"></i></button>
+						<button title="Underline" id="btn_underline" class="form-control" type="button" name="stroke" onclick="clickListener(this)">
+						<i class="fa fa-underline"></i></button>
+						<button title="Shadow" id="btn_shadow" class="form-control" type="button" name="stroke" onclick="clickListener(this)">
+						<i class="fa fa-circle-thin"></i></button>
+						<button title="Overline" id="btn_overline" class="form-control" type="button" name="stroke" onclick="clickListener(this)">
+						<i class="fa fa-random"></i></button>
+						<button title="Line Through" id="btn_linethrough" class="form-control" type="button" name="stroke" onclick="clickListener(this)">
+						<i class="fa fa-line-chart"></i></button>
+					</div>
+
+				</div>
+				
+				
+				
+				
+				</div>
+			  <div class="tab-pane" id="tab3">
+
+			  
+			  
+				<div class="panel-group" id="accordion2">
+				 
+					<div class="panel active panel-default">
+						<div class="panel-heading green_back">
+						  <h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion" href="#collapse_save1">
+							  <i class="fa fa-github-alt"></i> My Designs
+							</a>
+						  </h4>
+						</div>
+						<div id="collapse_save1" class="panel-collapse collapse in">
+						  <div class="panel-body">
+												
+							
+							<div class="element-area clrboth list-col-4">
+								<ul>
+									<li><a href="#"><img src="images/shirt.png" alt="" /></a>
+									<span>Design 1</span></li>
+									<li><a href="#"><img src="images/shirt.png" alt="" /></a>
+										<span>My Shirt  Design</span></li>
+									<li><a href="#"><img src="images/shirt.png" alt="" /></a>
+										<span>My Shirt  Design</span></li>
+									<!--<li><a href="#"><img src="images/shirt.png" alt="" /></a>-->
+									<!--<span>My Shirt  Design</span></li>-->
+									<!--<li><a href="#"><img src="images/shirt.png" alt="" /></a>-->
+									<!--<span>My Shirt  Design</span></li>-->
+								</ul>
+							</div>
+							
+							
+							<div class="form-group">
+								<button class="btn green_back pul-rgt">Load</button>
+							</div>
+							
+							
+						  </div>
+						</div>
+					</div>
+					
+					
+					<div class="panel panel-default">
+						<div class="panel-heading green_back">
+						  <h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion" href="#collapse_save2">
+							  <i class="fa fa-github-alt"></i> Save Design
+							</a>
+						  </h4>
+						</div>
+						<div id="collapse_save2" class="panel-collapse collapse in">
+						  <div class="panel-body">
+							
+							<div class="form-group">
+								<input class="form-control" type="text" placeholder="Enter your design name" />
+							</div>
+							
+							
+							<div class="form-group">
+								<textarea class="form-control" type="text" placeholder="Your comment note" ></textarea>
+							</div>
+							
+							<div class="form-group">
+								<button class="btn green_back pul-rgt" onclick="saveShirtDesign()">Save</button>
+								<button class="btn green_back pul-rgt" onclick="loadFromJson()">Export Image</button>
+							</div>
+
+						  </div>
+						</div>
+					</div>
+				</div>
+
+					
+					</div>
+			</div>
+			
+			
+			<!--<div class="social-area white text-center">-->
+					<!--<div class="col-xs-12 inline-control">-->
+						<!--<button title="Reset Tool" class="form-control" type="button" name="stroke">-->
+						<!--<i class="fa fa-refresh"></i>-->
+						<!--<span>reset</span>-->
+						<!--</button>-->
+
+						<!---->
+						<!--<button title="Share" class="form-control" type="button" name="stroke">-->
+						<!--<i class="fa fa-share-alt"></i></button>-->
+						<!--<button class="form-control" type="button" name="stroke">-->
+						<!--<i class="fa fa-facebook"></i></button>-->
+						<!--<button class="form-control" type="button" name="stroke">-->
+						<!--<i class="fa fa-twitter"></i></button>-->
+						<!--<button class="form-control" type="button" name="stroke">-->
+						<!--<i class="fa fa-google"></i></button>-->
+						<!--<button class="form-control" type="button" name="stroke">-->
+						<!--<i class="fa fa-instagram"></i></button>-->
+						<!---->
+					<!--</div>-->
+					<!---->
+			<!--</div>-->
+
+			
+			</div>
+						
+			
+			<div class="main__preview preview-area col-xs-7 p0">
+				
+				<div class="shirt-sides clrlist listview">
+						<ul>
+							<li id="btn_shirt_front"><a href="#" onclick="return shirtViews('front');"><img src="images/shirt-mini.png" alt="" /></a></li>
+							<li class="active" id="btn_shirt_back"><a href="#" onclick="return shirtViews('back');"><img src="images/shirt-mini.png" alt="" /></a></li>
+						</ul>
+				</div>
+
+				<div class="preview__img text-center p0">
+					<canvas id="c" class="text-center" width = 665px height = 570px style="border:1px solid #ffffff"></canvas>
+				</div>
+				
+				<!--<div class="preview__cont">-->
+					<!--<canvas id="c" width = 230px height = 400px style="border:3px solid #ffff00"></canvas>-->
+				<!--</div>-->
+
+				<div class="clearfix"></div>
+				
+				<div class="preview__bottom  text-center p0 bg-silver col-xs-12">
+					
+					<div class="preview_tool1 col-xs-4 fc30x30 inline-control p0">
+						<button title="Zoom in" class="form-control" type="button" name="stroke" onclick="ZoomIn()">
+						<i class="fa fa-search-plus" ></i></button>
+						<button title="Zoom out" class="form-control" type="button" name="stroke" onclick="ZoomOut()">
+						<i class="fa fa-search-minus"></i></button>
+						<button title="Reset Zoom" class="form-control" type="button" name="stroke" onclick="ResetZoom()">
+						<i class="fa fa-random"></i></button>
+						<button title="Panning " class="form-control" type="button" name="stroke" disabled>
+						<i class="fa fa-arrows"></i></button>
+					</div>
+					
+					<div class="preview_tool2 col-xs-3 inline-control fnc-range clrhm white">
+						<h5>Transparency</h5>
+						<!--input id="opacity_range" class="form-control" type="range" value="1"-->
+
+						<input id="opacity_range" class="form-control" type="range" min="0" max="1" step="0.01"
+							   value="1" onchange="changeOpacity(this.value)">
+						  <div class="seekbar-progress hidden">
+							<div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" style="width: 0%;"></div>
+						  </div>
+				
+<script>
+
+function qs(s) { return document.querySelector(s) }
+
+var handle = qs('.fnc-range input[type="range"]');
+var progressbar = qs('.fnc-range div[role="progressbar"]');
+
+handle.addEventListener('input', function(){
+  progressbar.style.width = this.value + '%';
+  progressbar.setAttribute('aria-valuenow', this.value);
+});
+
+</script>
+				
+				
+					</div>
+					<div class="preview_tool3 col-xs-5  fc30x30 inline-control pr0">
+					
+						<button title="Send Back" id="sendBack" class="form-control" type="button" name="stroke" onclick="sendBack()">
+						<i class="fa fa-clone"></i></button>
+						<button title="Bring Front" id="sendFront" class="form-control" type="button" name="stroke" onclick="sendFront()">
+						<i class="fa fa-object-ungroup"></i></button>
+						<button title="Flip Horizontal" id="flipHorizontal" class="form-control" type="button" name="stroke" onclick="flipHorizontal()">
+						<i class="fa fa-exchange"></i></button>
+						<button title="Flip Vertical" id="flipVertical" class="form-control" type="button" name="stroke" onclick="flipVertical()">
+						<i class="fa fa-exchange"></i></button>
+						<button title="Duplicate" id="duplicate" class="form-control" type="button" name="stroke" onclick="duplicateObject()">
+						<i class="fa fa-picture-o"></i></button>
+						<button title="Delete" id="delete" class="form-control" type="button" name="stroke" onclick="RemoveSelectedItems()">
+						<i class="fa fa-trash"></i></button>
+						
+					</div>
+					
+					
+				</div>
+
+					<div class="cart-area bg-navy col-xs-12 p10">
+						<button class="btn pul-lft green_back" type="button" name="stroke"  onclick="saveImg()">Export Image</button>
+						
+						<button class="btn pul-rgt green_back" type="button" name="stroke" disabled>Add to Cart</button>
+					</div>
+					
+			</div>
+		</div>
+	</section>
+			
+
+</main>
+    
+	<!--Bootstrap-->
+    <script src="js/bootstrap.min.js"></script>
+	<!--./Bootstrap-->
+	
+	<!--Major Scripts-->
+	<script src="js/viewportchecker.js"></script>
+    <script src="js/kodeized.js"></script>
+	<!--./Major Scripts-->
+
+		<script type="text/javascript" src="js/functions.js"></script>
+
+		<script>
+			var fileInput = jQuery('.file-input'),
+				dropArea = jQuery('.file-drop-area');
+
+			// change inner text
+			fileInput.on('change', function() {
+			  var filesCount = fileInput[0].files.length;
+
+//				changeOpacity(this.value);
+			  if (filesCount === 1) {
+				// if single file then show file name
+				jQuery('.js-set-number').text(fileInput.val().split('\\').pop());
+			  } else {
+				// otherwise show number of files
+				jQuery('.js-set-number').text(filesCount + ' files selected');
+			  }
+			});
+		</script>
+
+
+		</body>
+</html>
